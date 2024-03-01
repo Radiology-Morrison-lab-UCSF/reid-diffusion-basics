@@ -8,4 +8,5 @@ fi
 
 
 # Activate the virtual environment
+chmod -R 700 ./env/bin/
 source env/bin/activate

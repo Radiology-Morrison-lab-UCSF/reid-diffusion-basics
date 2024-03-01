@@ -1,14 +1,13 @@
 #!/bin/bash
 set -e
 
-dir_mrtrix_3tissue=~/binaries/MRtrix3Tissue/bin/
 loc_python=$(dirname "$0")/env/bin/python
 
 dir_top=/Users/lee/data/2024-02-28-MB3-test-moses/
 dir_dicoms_top=$dir_top"dicoms/"
-dir_dicoms_ap=$dir_dicoms_top"diffusion_1_ap/"
-dir_dicoms_pa=$dir_dicoms_top"diffusion_1_pa/"
-dir_diffusion=$dir_top"diffusion/"
+dir_dicoms_ap=$dir_dicoms_top"diffusion-3-ap/"
+dir_dicoms_pa=$dir_dicoms_top"diffusion-3-pa/"
+dir_diffusion=$dir_top"diffusion-3/"
 
 loc_dwi_raw=$dir_diffusion"raw.mif"
 
@@ -38,7 +37,6 @@ function ConvertRaw() {
     mrconvert -force $dir_tmp/*.nii* -json_import $dir_tmp/*.json -fslgrad $dir_tmp/*bvec $dir_tmp/*bval $loc_temp_pa
     
     mrcat $loc_temp_ap $loc_temp_pa $loc_out
-    mrinfo $loc_out 
 
     CleanupTmpDir
 }
@@ -74,13 +72,13 @@ function EddyCorrect {
 function SkullStrip {
     loc_in=$1
     loc_out=$2
-    if [ ! -f $loc_in ]; then
+    if [ ! -f $loc_out ]; then
         dwi2mask $loc_in $loc_out
     fi
 }
 
 
-function SSMTFOD() {
+function MSMTFOD() {
     loc_in=$1
     loc_mask=$2
     dir_out=$3
@@ -107,10 +105,8 @@ function SSMTFOD() {
         dwi2response dhollander $loc_in $dir_out/response-wm.txt $dir_out/response-gm.txt $dir_out/response-csf.txt    
     fi
     
-
-    $loc_python $dir_mrtrix_3tissue/ss3t_csd_beta1 -mask $loc_mask $loc_in $dir_out/response-wm.txt $dir_out/fod-wm.mif $dir_out/response-gm.txt $dir_out/fod-gm.mif $dir_out/response-csf.txt $dir_out/fod-csf.mif
-
-    mrview $dir_out/fod-wm.mif    
+    dwi2fod msmt_csd $loc_in -mask $loc_mask $dir_out/response-wm.txt $dir_out/fod-wm.mif $dir_out/response-gm.txt $dir_out/fod-gm.mif $dir_out/response-csf.txt $dir_out/fod-csf.mif
+  
 }
 
 function CalcTensors {
@@ -143,7 +139,7 @@ EddyCorrect $loc_denoised $loc_preprocessed
 
 SkullStrip $loc_preprocessed $loc_mask
 
-SSMTFOD $loc_preprocessed $loc_mask $dir_diffusion
+MSMTFOD $loc_preprocessed $loc_mask $dir_diffusion
 
 CalcTensors $loc_preprocessed $loc_mask $loc_fa $loc_md
 
