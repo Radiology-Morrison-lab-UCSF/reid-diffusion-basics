@@ -1,12 +1,12 @@
 #!/bin/bash
 set -e
 
-
-dir_top=/Users/lee/data/2024-02-29-test-qb3/
-dir_dicoms_top=$dir_top"dicoms/"
-dir_dicoms_ap=$dir_dicoms_top"diffusion_1_ap/"
-dir_dicoms_pa=$dir_dicoms_top"diffusion_1_pa/"
-dir_diffusion=$dir_top"diffusion_1/"
+dir_top=/Users/lee/neurodesktop-storage/uh3/
+subj="subj-01"
+dir_dicoms_top=$dir_top"dicoms/"$subj"/"
+dir_dicoms_ap=$dir_dicoms_top"diffusion_ap/"
+dir_dicoms_pa=$dir_dicoms_top"diffusion_pa/"
+dir_diffusion=$dir_top"diffusion/"$subj"/"
 
 loc_dwi_raw=$dir_diffusion"raw.mif"
 loc_denoised=$dir_diffusion"denoised.mif"
