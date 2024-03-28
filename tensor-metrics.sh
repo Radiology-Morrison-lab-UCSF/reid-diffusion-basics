@@ -1,8 +1,9 @@
+source file-or-gz.sh
 function CalcTensors {
-    loc_in=$1
-    loc_mask=$2
-    loc_fa=$3
-    loc_md=$4
+    loc_in=$(gz-filepath-if-only-gz-found "$1")
+    loc_mask=$(gz-filepath-if-only-gz-found "$2")
+    loc_fa=$(gz-filepath-if-only-gz-found "$3")
+    loc_md=$(gz-filepath-if-only-gz-found "$4")
 
     if [ -f "$loc_fa" ] && \
        [ -f "$loc_md" ] ]; then

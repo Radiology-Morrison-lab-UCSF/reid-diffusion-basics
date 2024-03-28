@@ -1,11 +1,13 @@
+source file-or-gz.sh
+
 function CleanupTmpDir {
     rm -rf $dir_tmp
 }
 
 function EddyCorrect {
-    loc_in=$1
+    loc_in=$(gz-filepath-if-only-gz-found "$1")
     loc_out=$2
-    if [ -f $loc_out ]; then
+    if file_or_gz_exists $loc_out; then
         return
     fi
 
