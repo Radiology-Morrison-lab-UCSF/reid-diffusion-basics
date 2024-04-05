@@ -11,3 +11,4 @@ add_slash_if_needed() {
 
     echo "$var"
 }
+

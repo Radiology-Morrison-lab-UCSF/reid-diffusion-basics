@@ -72,6 +72,42 @@ build_mrtrix3tissue() {
     ./build
 }
 
+install_hd_bet() {
+    # Python must be activated first(!)
+
+    if [ -d HD-BET ]; then
+        echo "HD-BET installation found. Delete HD-BET directory and re-run script to reinstall"
+        return 0
+    fi
+
+    git clone https://github.com/MIC-DKFZ/HD-BET
+
+    cd HD-BET
+    python -m pip install -e .
+    echo "folder_with_parameter_files = os.path.join(os.path.dirname(os.path.abspath(__file__)), \"models\")" >> HD_BET/paths.py
+    cd ..
+    
+}
+
+install_ants() {
+
+    if [ -d ants ]; then
+        echo "Ants installation found. Delete ants directory and re-run script to reinstall"
+    fi
+
+    if [[ $(uname) == "Darwin" ]]; then
+        curl -L https://github.com/ANTsX/ANTs/releases/download/v2.5.1/ants-2.5.1-macos-14-ARM64-clang.zip -o ants.zip
+        unzip ants.zip
+        mv ants-2.5.1-arm ants
+    else
+        wget https://github.com/ANTsX/ANTs/releases/download/v2.5.1/ants-2.5.1-ubuntu-22.04-X64-gcc.zip ants.zip
+        unzip ants.zip
+    fi
+
+    rm ants.zip
+
+}
+
 setup_python() {
 
     # Create a Python virtual environment
@@ -121,7 +157,15 @@ install_dependencies() {
         export PATH='brew --prefix'/opt/qt5/bin:$PATH
 
     else
-        echo "This is not macOS. Install is not yet supported"
+        # Note Eigen has been left out because this repo uses old code
+        # that is not compatible with the newest version. So we install
+        # Eigen manually in this directory when building mrtrix
+        sudo apt-get update
+        sudo apt-get install git g++ python3.10 python3.10-dev \
+                                     python3-pip python3.10-venv \
+                                     zlib1g-dev libqt4-opengl-dev \
+                                     libgl1-mesa-dev libfftw3-dev \
+                                     libtiff5-dev libpng-dev
         exit 1
     fi
 }
@@ -130,7 +174,10 @@ check_prerequisites
 
 setup_python
 
+install_ants
+
 build_mrtrix3tissue
 
+install_hd_bet
 
 echo "Install Complete"

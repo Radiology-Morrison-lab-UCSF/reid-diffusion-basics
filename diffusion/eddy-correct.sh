@@ -1,4 +1,4 @@
-source file-or-gz.sh
+source ../file-or-gz.sh
 
 function CleanupTmpDir {
     rm -rf $dir_tmp
@@ -18,7 +18,12 @@ function EddyCorrect {
     loc_dwis=$dir_tmp"/dwis.mif"
     dwiextract -force $loc_in -bzero $loc_b0s
     dwiextract -force $loc_in -no_bzero $loc_dwis
-    dwifslpreproc $loc_in $loc_out -rpe_header -se_epi $loc_b0s -align_seepi
+    eddyArgs=" --repol " # patch up the odd black slice
+    # To-do: slice to order movement
+    # Requires slice timing/order which neither GE nor Philips seem to include in dicoms headers
+    # --mporder=6 --slspec=my_slspec.txt --s2v_niter=5 --s2v_lambda=1 --s2v_interp=trilinear"
+
+    dwifslpreproc $loc_in $loc_out -rpe_header -se_epi $loc_b0s -align_seepi -eddy_options "$eddyArgs"
     
     CleanupTmpDir
 }

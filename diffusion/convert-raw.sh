@@ -53,6 +53,13 @@ function ConvertRaw() {
     loc_temp_ap=$dir_tmp"temp_ap.mif"
     loc_temp_pa=$dir_tmp"temp_pa.mif"
 
+    # Note: 
+    # mrconvert works fine on siemens and GE dicoms but can fail on Philips due to use of JPEG2000 encoding
+    # of pixel data, which is unsupported
+    # To make this as universal as possible, we use dcm2niix, which also gives an estimated TotalReadoutTime
+    # where information is available, rather than us having to calculate it ourselves. Note that dcm2niix
+    # itself doesn't guarantee proper JPEG2000 decoding - this seems to be a beta feature at the time of 
+    # writing
     dcm2niix -o $dir_tmp $1
     mrconvert -force $dir_tmp/*.nii* -json_import $dir_tmp/*.json -fslgrad $dir_tmp/*bvec $dir_tmp/*bval $loc_temp_ap
 
