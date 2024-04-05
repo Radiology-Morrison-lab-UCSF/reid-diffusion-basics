@@ -13,6 +13,7 @@ source skullstrip.sh
 source ssmtfod.sh
 source tensor-metrics.sh
 source bias-correct-dwi.sh
+source dwi-paths.sh
 
 
 
@@ -64,32 +65,11 @@ if [ -z "$dir_top" ] || [ -z "$subj" ]; then
 fi
 
 
-# Set directories
-dir_top=$(add_slash_if_needed "$dir_top")
-dir_dicoms_top=$dir_top"dicoms/"$subj"/"
-dir_dicoms_ap=$dir_dicoms_top"diffusion_ap/"
-dir_dicoms_pa=$dir_dicoms_top"diffusion_pa/"
-dir_diffusion=$dir_top"diffusion/"$subj"/"
-
-loc_dwi_raw=$dir_diffusion"raw.mif"
-loc_denoised=$dir_diffusion"denoised.mif"
-loc_eddyCorrected=$dir_diffusion"eddy-corrected.mif"
-loc_preprocessed=$dir_diffusion"preprocessed.mif"
-loc_wm_fod=$dir_diffusion"fod-wm.mif.gz"
-loc_fa=$dir_diffusion"fa.nii.gz"
-loc_md=$dir_diffusion"md.nii.gz"
-loc_mask=$dir_diffusion"mask.mif"
-
-
-dir_structurals=$dir_top'structurals/'$subj/
-loc_t1_n4=$dir_structurals"t1.nii.gz"
-loc_t1_brainmask=$dir_structurals"t1-brainmask.nii.gz"
-loc_t1_brain=$dir_structurals"t1-brain.nii.gz"
-
-../t1-processing/prepare-t1.sh --study-dir $dir_top --subj $subj
+# Set parameters for output file paths
+SetDWIPaths "$dir_top" $subj
 
 # Check first in case working files have been cleaned up
-if file_or_gz_exists $loc_preprocessed $loc_wm_fod $loc_mask; then
+if file_or_gz_exists $loc_preprocessed $loc_wm_fod $loc_dwimask; then
     echo Found preprocessed diffusion, mask, and fods
 else
     mkdir -p $dir_diffusion
@@ -100,13 +80,13 @@ else
 
     EddyCorrect $loc_denoised $loc_eddyCorrected
 
-    SkullStripDWI $loc_eddyCorrected $loc_mask
+    SkullStripDWI $loc_eddyCorrected $loc_dwimask
 
-    BiasCorrect $loc_eddyCorrected $loc_mask $loc_preprocessed
+    BiasCorrect $loc_eddyCorrected $loc_dwimask $loc_preprocessed
 
-    SSMTFOD $loc_preprocessed $loc_mask $dir_diffusion
+    SSMTFOD $loc_preprocessed $loc_dwimask $dir_diffusion
 fi
 
-CalcTensors $loc_preprocessed $loc_mask $loc_fa $loc_md
+CalcTensors $loc_preprocessed $loc_dwimask $loc_fa $loc_md
 
 mrview $loc_fa -interpolation false -odf.load_sh $loc_wm_fod

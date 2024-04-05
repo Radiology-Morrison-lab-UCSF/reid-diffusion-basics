@@ -6,12 +6,14 @@ The script `diffusion/process-single-shell.sh` will process single-shell reverse
 
 The script `diffusion/process-multishell.sh` will process multi-shell reverse phased DWI. 
 
+The script `t1-to-diffusion.sh` will process T1 dicoms and align them to already processed diffusion data from the scripts above.
 
 ## Installation
 
 Run ./install before first running the script. Note XCode must be installed already if on Apple.
 
 If you have existing installations of Mrtrix SSMT you can override locations in exe-paths, or (better) you can shortcut installation by creating softlinks in this source directory. See exe-paths for the expected paths.
+
 
 ## Structuring your data
 
@@ -24,7 +26,7 @@ Data should be structured as follows:
 ```
 
 
-Results are output to:
+Results for diffusion pipelines are output to:
 
 ```<study-directory>/diffusion/<subject-id>/```
 

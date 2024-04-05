@@ -8,7 +8,7 @@ source ../file-or-gz.sh
 source ../exe-paths.sh
 source convert-raw.sh
 source ../hd-bet.sh
-
+source structural-paths.sh
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
@@ -32,18 +32,12 @@ while [[ $# -gt 0 ]]; do
 done
 
 
+# SetStructuralPaths sets up the paths we need for t1s, brainmasks, etc
+SetStructuralPaths $dir_top $subj
 
-dir_dicoms=$dir_top'dicoms/'$subj'/t1/'
-dir_processed=$dir_top'structurals/'$subj/
+mkdir -p $dir_processed_structurals
 
-loc_t1_raw=$dir_processed"t1-raw.nii.gz"
-loc_t1_n4=$dir_processed"t1.nii.gz"
-loc_t1_brainmask=$dir_processed"t1-brainmask.nii.gz"
-loc_t1_brain=$dir_processed"t1-brain.nii.gz"
-
-mkdir -p $dir_processed
-
-ConvertStructuralFromDicom $dir_dicoms $loc_t1_raw
+ConvertStructuralFromDicom $dir_dicoms_t1 $loc_t1_raw
 
 Skullstrip_HDBET $loc_t1_raw $loc_t1_brainmask
 
