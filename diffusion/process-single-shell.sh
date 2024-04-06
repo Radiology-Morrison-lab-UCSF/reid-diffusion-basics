@@ -85,8 +85,16 @@ else
     BiasCorrect $loc_eddyCorrected $loc_dwimask $loc_preprocessed
 
     SSMTFOD $loc_preprocessed $loc_dwimask $dir_diffusion
+
 fi
 
 CalcTensors $loc_preprocessed $loc_dwimask $loc_fa $loc_md
 
+# Save some disk space
+rm -f $loc_dwi_raw $loc_denoised $loc_eddyCorrected
+if [ -e $loc_preprocessed ]; then
+    gzip $loc_preprocessed
+fi
+
+echo "QC FA and FODs"
 mrview $loc_fa -interpolation false -odf.load_sh $loc_wm_fod
