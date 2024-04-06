@@ -10,9 +10,9 @@ The script `t1-to-diffusion.sh` will process T1 dicoms and align them to already
 
 ## Installation
 
-Run ./install before first running the script. Note XCode must be installed already if on Apple.
+Run `./install.sh` to install dependencies (locally - will not affect what is in your `PATH`). Note XCode and FSL must be installed already if on Apple.
 
-If you have existing installations of Mrtrix SSMT you can override locations in exe-paths, or (better) you can shortcut installation by creating softlinks in this source directory. See exe-paths for the expected paths.
+If you have existing installations of Mrtrix SSMT, Ants, and HD-BET you can override locations in exe-paths, or (better) you can shortcut installation by creating softlinks in this source directory. See `exe-paths.sh` for the expected paths.
 
 
 ## Structuring your data
