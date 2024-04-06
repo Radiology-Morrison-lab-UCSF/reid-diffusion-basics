@@ -28,8 +28,6 @@ function SkullStripDWI {
     loc_mask_dwi2mask=$dir_tmp"/dwi2mask.nii"
     dwi2mask $loc_in $loc_mask_dwi2mask
 
-    mrinfo $loc_mask_dwi2mask $loc_mask_hdbet
-
     # Combine masks
     mrcalc $loc_mask_dwi2mask $loc_mask_hdbet "-or" $loc_out
 

@@ -71,14 +71,12 @@ function ConvertRaw() {
     mrconvert -force $dir_tmp/*.nii* -json_import $dir_tmp/*.json -fslgrad $dir_tmp/*bvec $dir_tmp/*bval $loc_temp_pa
     
     ensure_tag $loc_temp_pa "PhaseEncodingDirection" j
-    ensure_tag $loc_temp_pa "TotalReadoutTime" 0.046
-
-    mrcat $loc_temp_ap $loc_temp_pa $loc_out
-
     # Make sure total readout time is there. It doesn't actually matter
     # what this value is, so long as AP and PA match, and they genuinely
     # matched during scanning
-    mrinfo $loc_out 
+    ensure_tag $loc_temp_pa "TotalReadoutTime" 0.046
+
+    mrcat $loc_temp_ap $loc_temp_pa $loc_out
 
     CleanupTmpDir
 }
