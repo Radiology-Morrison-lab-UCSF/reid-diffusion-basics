@@ -10,10 +10,11 @@ source convert-raw.sh
 source denoise-gibbs.sh
 source eddy-correct.sh
 source skullstrip.sh
-source ssmtfod.sh
+source fods.sh
 source tensor-metrics.sh
 source bias-correct-dwi.sh
 source dwi-paths.sh
+source process-basics.sh
 
 
 
@@ -64,28 +65,16 @@ if [ -z "$dir_top" ] || [ -z "$subj" ]; then
     exit 1
 fi
 
-
 # Set parameters for output file paths
 SetDWIPaths "$dir_top" $subj
 
+PreprocessBasicDWI "$dir_top" $subj
+
 # Check first in case working files have been cleaned up
-if file_or_gz_exists $loc_preprocessed $loc_wm_fod $loc_dwimask; then
-    echo Found preprocessed diffusion, mask, and fods
+if file_or_gz_exists $loc_wm_fod $loc_dwimask; then
+    echo Found mask and fods
 else
-    mkdir -p $dir_diffusion
-
-    ConvertRaw $dir_dicoms_ap $dir_dicoms_pa $loc_dwi_raw
-
-    DenoiseAndGibbs $loc_dwi_raw $loc_denoised
-
-    EddyCorrect $loc_denoised $loc_eddyCorrected
-
-    SkullStripDWI $loc_eddyCorrected $loc_dwimask
-
-    BiasCorrect $loc_eddyCorrected $loc_dwimask $loc_preprocessed
-
     SSMTFOD $loc_preprocessed $loc_dwimask $dir_diffusion
-
 fi
 
 CalcTensors $loc_preprocessed $loc_dwimask $loc_fa $loc_md

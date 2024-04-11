@@ -47,8 +47,8 @@ function ConvertRaw() {
         return
     fi
 
-    dir_tmp=`mktemp -d`
-    trap CleanupTmpDir EXIT
+    dir_tmp=`mktemp -d`/
+    trap "rm -r $dir_tmp" EXIT
     
     loc_temp_ap=$dir_tmp"temp_ap.mif"
     loc_temp_pa=$dir_tmp"temp_pa.mif"

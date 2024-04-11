@@ -10,4 +10,10 @@ SetStructuralPaths(){
     
     loc_t1_to_dwi=$dir_processed_structurals"t1-to-diffusion.mat"
     loc_t1_dwi_space=$dir_processed_structurals"t1-in-diffusion-space.nii.gz"
+
+    loc_t1_to_mni_affine=$dir_processed_structurals"t1-to-mni-affine.mat"
+    loc_t1_to_mni_nonrigid=$dir_processed_structurals"t1-to-mni-nonrigid.nii.gz"
+    loc_t1_to_mni_nonrigid_inverse=$dir_processed_structurals"t1-to-mni-nonrigid-inverse-warp.nii.gz"
+    loc_t1_mni_space=$dir_processed_structurals"t1-in-mni-space.nii.gz"
+
 }

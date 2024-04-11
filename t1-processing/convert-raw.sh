@@ -1,9 +1,7 @@
 source ../path-functions.sh
 source ../file-or-gz.sh
 
-function CleanupTmpDir {
-    rm -rf $dir_tmp
-}
+
 
 function ConvertStructuralFromDicom {
     local dicom_dir=$1
@@ -21,7 +19,7 @@ function ConvertStructuralFromDicom {
     else
         # Presumably a nifti is requested
         # We use dcm2niix because it can handle JPEG2000 encoded data
-        local dir_tmp=`mktemp -d`
+        local dir_tmp=`mktemp -d`/
         trap "rm -rf $dir_tmp" EXIT
 
         dcm2niix -o $dir_tmp -b n $dicom_dir

@@ -16,5 +16,6 @@ SetDWIPaths(){
     loc_wm_fod=$dir_diffusion"fod-wm.mif.gz"
     loc_fa=$dir_diffusion"fa.nii.gz"
     loc_md=$dir_diffusion"md.nii.gz"
+    loc_kurtosis=$dir_diffusion"kurtosis.mif.gz"
     loc_dwimask=$dir_diffusion"mask.mif"
 }
