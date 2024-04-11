@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 file_or_gz_exists() {
     for filename in "$@"; do
         # Check if the file exists
@@ -10,7 +11,7 @@ file_or_gz_exists() {
     return 0  # Success, all files exist
 }
 
-gz-filepath-if-only-gz-found() {
+GzFilepathIfOnlyGzFound() {
     # If the .gz version is found but the original is not, it returns the gz version
     if [ -f "$1" ]; then
         echo "$1"
@@ -21,7 +22,7 @@ gz-filepath-if-only-gz-found() {
     fi
 }
 
-gz-safe-move(){
+GzSafeMove(){
     # Moves the file if suffixes match
     # If they don't match in terms of .gz then gzip or gunzip is used
     # to write a new file, then the original removed

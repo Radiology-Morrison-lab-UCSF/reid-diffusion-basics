@@ -2,9 +2,9 @@ source ../file-or-gz.sh
 source ../exe-paths.sh
 
 function SSMTFOD() {
-    local loc_in=$(gz-filepath-if-only-gz-found "$1")
-    local loc_mask=$(gz-filepath-if-only-gz-found "$2")
-    local dir_out=$(gz-filepath-if-only-gz-found "$3")
+    local loc_in=$(GzFilepathIfOnlyGzFound "$1")
+    local loc_mask=$(GzFilepathIfOnlyGzFound "$2")
+    local dir_out=$(GzFilepathIfOnlyGzFound "$3")
 
     local loc_resp_wm=$dir_out/response-wm.txt
     local loc_resp_gm=$dir_out/response-gm.txt
@@ -27,9 +27,9 @@ function SSMTFOD() {
 }
 
 function MSMTFOD() {
-    local loc_in=$(gz-filepath-if-only-gz-found "$1")
-    local loc_mask=$(gz-filepath-if-only-gz-found "$2")
-    local dir_out=$(gz-filepath-if-only-gz-found "$3")
+    local loc_in=$(GzFilepathIfOnlyGzFound "$1")
+    local loc_mask=$(GzFilepathIfOnlyGzFound "$2")
+    local dir_out=$(GzFilepathIfOnlyGzFound "$3")
 
     local loc_resp_wm=$dir_out/response-wm.txt
     local loc_resp_gm=$dir_out/response-gm.txt

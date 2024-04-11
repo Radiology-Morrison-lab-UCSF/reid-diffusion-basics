@@ -66,15 +66,15 @@ SetDWIPaths $dir_top $subj
 if [ ! $(file_or_gz_exists $loc_t1_to_dwi $loc_t1_dwi_space) ]; then
     cd $dir_processed_structurals
 
-    loc_moving=$(gz-filepath-if-only-gz-found "$loc_t1_n4")
-    loc_moving_mask=$(gz-filepath-if-only-gz-found "$loc_t1_brainmask")
-    loc_fixed=$(gz-filepath-if-only-gz-found "$loc_fa")
+    loc_moving=$(GzFilepathIfOnlyGzFound "$loc_t1_n4")
+    loc_moving_mask=$(GzFilepathIfOnlyGzFound "$loc_t1_brainmask")
+    loc_fixed=$(GzFilepathIfOnlyGzFound "$loc_fa")
 
     loc_fixed_mask=$(mktemp)
     mv $loc_fixed_mask $loc_fixed_mask.nii
     loc_fixed_mask=$loc_fixed_mask.nii
     trap "rm $loc_fixed_mask" EXIT
-    mrconvert --force $(gz-filepath-if-only-gz-found "$loc_dwimask") $loc_fixed_mask
+    mrconvert --force $(GzFilepathIfOnlyGzFound "$loc_dwimask") $loc_fixed_mask
 
     antsRegistration \
         -d 3 \

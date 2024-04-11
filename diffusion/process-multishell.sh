@@ -85,4 +85,4 @@ if [ -e $loc_preprocessed ]; then
 fi
 
 echo "QC FA and FODs"
-mrview $loc_fa $loc_kurtosis -interpolation false -odf.load_sh $(gz-filepath-if-only-gz-found "$loc_wm_fod")
+mrview $loc_fa $loc_kurtosis -interpolation false -odf.load_sh $(GzFilepathIfOnlyGzFound "$loc_wm_fod")

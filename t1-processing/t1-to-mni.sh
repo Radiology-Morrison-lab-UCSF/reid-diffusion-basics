@@ -59,8 +59,8 @@ fi
 SetAtlasPaths
 
 cd $dir_processed_structurals
-loc_moving=$(gz-filepath-if-only-gz-found "$loc_t1_n4")
-loc_moving_mask=$(gz-filepath-if-only-gz-found "$loc_t1_brainmask")
+loc_moving=$(GzFilepathIfOnlyGzFound "$loc_t1_n4")
+loc_moving_mask=$(GzFilepathIfOnlyGzFound "$loc_t1_brainmask")
 loc_fixed=$loc_mni_t1
 loc_fixed_mask=$loc_mni_mask
 

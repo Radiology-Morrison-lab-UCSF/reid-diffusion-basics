@@ -2,7 +2,7 @@ source $(dirname "$BASH_SOURCE[0]")/file-or-gz.sh
 
 
 Skullstrip_HDBET() {
-    local loc_in=$(gz-filepath-if-only-gz-found "$1")
+    local loc_in=$(GzFilepathIfOnlyGzFound "$1")
     local loc_mask=$2
     if [ "$#" -ge 3 ]; then
         local loc_brain="$3"
@@ -14,7 +14,7 @@ Skullstrip_HDBET() {
 }
 
 Skullstrip_HDBET_Quick() {
-    local loc_in=$(gz-filepath-if-only-gz-found "$1")
+    local loc_in=$(GzFilepathIfOnlyGzFound "$1")
     local loc_mask=$2
     if [ "$#" -ge 3 ]; then
         local loc_brain="$3"
@@ -27,7 +27,7 @@ Skullstrip_HDBET_Quick() {
 
 
 Skullstrip_HDBET_Customisable() {
-    local loc_in=$(gz-filepath-if-only-gz-found "$1")
+    local loc_in=$(GzFilepathIfOnlyGzFound "$1")
     local loc_mask=$2
     local hdbetargs=$3
     if [ "$#" -ge 4 ]; then
@@ -50,9 +50,9 @@ Skullstrip_HDBET_Customisable() {
     hd-bet -i $fn_in $hdbetargs
 
     #local filename_no_suffix="${fn_in%.*}"
-    gz-safe-move *_bet_mask.nii.gz $loc_mask
+    GzSafeMove *_bet_mask.nii.gz $loc_mask
     
     if [ -n "$loc_brain" ]; then
-        gz-safe-move *_bet.nii.gz $loc_brain
+        GzSafeMove *_bet.nii.gz $loc_brain
     fi
 }

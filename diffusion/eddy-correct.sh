@@ -2,7 +2,7 @@ source ../file-or-gz.sh
 
 
 function EddyCorrect {
-    loc_in=$(gz-filepath-if-only-gz-found "$1")
+    loc_in=$(GzFilepathIfOnlyGzFound "$1")
     loc_out=$2
     if file_or_gz_exists $loc_out; then
         return

@@ -24,7 +24,7 @@ function ConvertStructuralFromDicom {
 
         dcm2niix -o $dir_tmp -b n $dicom_dir
 
-        gz-safe-move $dir_tmp/*.nii* $loc_out
+        GzSafeMove $dir_tmp/*.nii* $loc_out
     fi
 
 }

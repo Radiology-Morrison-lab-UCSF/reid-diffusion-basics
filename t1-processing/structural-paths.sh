@@ -1,3 +1,6 @@
+source $(realpath $(dirname "$BASH_SOURCE[0]"))/../path-functions.sh
+
+
 SetStructuralPaths(){
     local dir_top=$(add_slash_if_needed "$1")
     local subj=$2
@@ -13,7 +16,7 @@ SetStructuralPaths(){
 
     loc_t1_to_mni_affine=$dir_processed_structurals"t1-to-mni-affine.mat"
     loc_t1_to_mni_nonrigid=$dir_processed_structurals"t1-to-mni-nonrigid.nii.gz"
-    loc_t1_to_mni_nonrigid_inverse=$dir_processed_structurals"t1-to-mni-nonrigid-inverse-warp.nii.gz"
+    loc_t1_to_mni_nonrigid_inverse=$dir_processed_structurals"t1-to-mni-nonrigid-inverse.nii.gz"
     loc_t1_mni_space=$dir_processed_structurals"t1-in-mni-space.nii.gz"
 
 }

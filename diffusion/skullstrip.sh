@@ -3,7 +3,7 @@ source ../hd-bet.sh
 
 
 function SkullStripDWI {
-    local loc_preprocessed_dwi=$(gz-filepath-if-only-gz-found "$1")
+    local loc_preprocessed_dwi=$(GzFilepathIfOnlyGzFound "$1")
     local loc_out=$2
 
 
