@@ -72,6 +72,32 @@ build_mrtrix3tissue() {
     ./build
 }
 
+build_mrtrix3Dev() {
+
+    local directory="MRtrix3Src"
+    local installTo="$(pwd)/mrtrix3-dev"
+
+    if [ -f $installTo ]; then
+        echo "MRtrix3 Dev installation found. Delete $installTo and re-run script to reinstall"
+        return 0
+    fi
+
+    install_dependencies
+
+    # Check if the directory exists and is not empty
+    if [ ! -d "$directory" ] || [ -z "$(ls -A "$directory")" ]; then
+        # Clone the repository if the directory doesn't exist or is empty
+        git clone --depth 1 --branch dev https://github.com/MRtrix3/MRtrix3.git "$directory"
+    else
+        echo "Git clone skipped: Directory $directory already exists and is not empty."
+    fi
+
+    cd $directory
+
+    cmake -B build -DCMAKE_INSTALL_PREFIX=$installTo
+    cmake --build build
+    cmake --install build
+}
 install_hd_bet() {
     # Python must be activated first(!)
 
@@ -157,15 +183,13 @@ install_dependencies() {
         export PATH='brew --prefix'/opt/qt5/bin:$PATH
 
     else
-        # Note Eigen has been left out because this repo uses old code
-        # that is not compatible with the newest version. So we install
-        # Eigen manually in this directory when building mrtrix
         sudo apt-get update
         sudo apt-get install git g++ python3.10 python3.10-dev \
                                      python3-pip python3.10-venv \
                                      zlib1g-dev libqt4-opengl-dev \
                                      libgl1-mesa-dev libfftw3-dev \
-                                     libtiff5-dev libpng-dev
+                                     libtiff5-dev libpng-dev \
+                                     eigen
         exit 1
     fi
 }
@@ -177,6 +201,8 @@ setup_python
 install_ants
 
 build_mrtrix3tissue
+
+build_mrtrix3Dev
 
 install_hd_bet
 
