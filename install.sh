@@ -130,6 +130,7 @@ install_hd_bet() {
     git clone https://github.com/MIC-DKFZ/HD-BET
 
     cd HD-BET
+    python3 -m ensurepip
     python -m pip install -e .
     echo "folder_with_parameter_files = os.path.join(os.path.dirname(os.path.abspath(__file__)), \"models\")" >> HD_BET/paths.py
     cd ..
@@ -172,6 +173,8 @@ setup_python() {
     # Activate the virtual environment
     chmod -R 700 ./env/bin/
     source env/bin/activate
+
+
 }
 
 # Ensure we are in the dir of this script

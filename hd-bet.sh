@@ -27,7 +27,6 @@ Skullstrip_HDBET_Quick() {
 
 
 Skullstrip_HDBET_Customisable() {
-    set -x
     local loc_in=$(GzFilepathIfOnlyGzFound "$1")
     local loc_mask=$2
     local hdbetargs=$3
