@@ -23,3 +23,8 @@ export PATH=$dir_mrtrix_3tissue:$dir_python_env:$dir_hdbet:$dir_ants:$PATH
 
 # Activate the virtual environment    
 source $loc_activate_python
+
+# Set up FSL
+if [ -z "$FSLDIR" ]; then
+    source $dir_sourceTop/.bash_profile
+fi

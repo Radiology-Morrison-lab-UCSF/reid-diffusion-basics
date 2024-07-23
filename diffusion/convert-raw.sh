@@ -66,7 +66,7 @@ function ConvertRaw() {
     ensure_tag $loc_temp_ap "PhaseEncodingDirection" j-
     ensure_tag $loc_temp_ap "TotalReadoutTime" 0.046
 
-    rm $dir_tmp/*
+    rm $dir_tmp/*.nii*  $dir_tmp/*.json  $dir_tmp/*.bvec $dir_tmp/*bval
     dcm2niix -o $dir_tmp $2
     mrconvert -force $dir_tmp/*.nii* -json_import $dir_tmp/*.json -fslgrad $dir_tmp/*bvec $dir_tmp/*bval $loc_temp_pa
     

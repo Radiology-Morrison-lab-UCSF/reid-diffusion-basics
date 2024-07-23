@@ -1,18 +1,30 @@
 #!/bin/bash
 
+set -e
+
 
 check_prerequisites () {
-    if [ -z "$FSLDIR" ] || [ ! -d "$FSLDIR" ]; then
-        echo "FSLDIR is not found or is not a valid directory."
-        echo "This script does not handle installing FSL. You must install FSL yourself."
-        exit -1
-    fi
+
 
     if ! command -v python3 &> /dev/null; then
         echo "Error: python3 is not found. Please install Python 3 then re-run this script."
         exit 1
     fi
 }
+
+# Function to check if a command is available
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
+
+# Function to install unzip using apt-get
+install_unzip() {
+    if ! command_exists unzip; then
+        sudo apt-get update
+        sudo apt-get install -y unzip
+    fi
+}
+
 
 install_homebrew() {
     # Check if Homebrew is already installed
@@ -43,7 +55,7 @@ build_mrtrix3tissue() {
         return 0
     fi
 
-    install_dependencies
+    install_mrtrix_dependencies
 
     # Check if the directory exists and is not empty
     if [ ! -d "$directory" ] || [ -z "$(ls -A "$directory")" ]; then
@@ -53,6 +65,7 @@ build_mrtrix3tissue() {
         echo "Git clone skipped: Directory $directory already exists and is not empty."
     fi
 
+    local start=$(pwd)
     cd $directory
 
 
@@ -61,28 +74,30 @@ build_mrtrix3tissue() {
         # This is not compatible with new Eigen, so put an old version of eigen in the 
         # directory and point to it, rather than universally with homebrew
         git clone https://gitlab.com/libeigen/eigen.git
-        cd Eigen
+        cd eigen
         git checkout 3.3.9
         cd ..
     fi
 
-    # try again with appropriate flags:
     export ARCH=native
-    EIGEN_CFLAGS="-isystem $(pwd)/eigen" ./configure
+    EIGEN_CFLAGS="-isystem $(pwd)/eigen" ./configure -nogui
     ./build
+
+    cd $start
 }
 
 build_mrtrix3Dev() {
 
     local directory="MRtrix3Src"
     local installTo="$(pwd)/mrtrix3-dev"
+    local start=$(pwd)
 
-    if [ -f $installTo ]; then
+    if [ -d $installTo ]; then
         echo "MRtrix3 Dev installation found. Delete $installTo and re-run script to reinstall"
         return 0
     fi
 
-    install_dependencies
+    install_mrtrix_dependencies
 
     # Check if the directory exists and is not empty
     if [ ! -d "$directory" ] || [ -z "$(ls -A "$directory")" ]; then
@@ -94,9 +109,15 @@ build_mrtrix3Dev() {
 
     cd $directory
 
-    cmake -B build -DCMAKE_INSTALL_PREFIX=$installTo
+    # create the make files. Note that we set the git path to nothing so that it does not try
+    # to compare the mrtrix base version to the current tag, as in the dev arm it refuses to build this was
+    cmake -B build -D CMAKE_INSTALL_PREFIX="$installTo" -D MRTRIX_BUILD_GUI=OFF -D GIT_EXECUTABLE=
+    # build
     cmake --build build
     cmake --install build
+
+    cd $start
+    rm -rf $directory
 }
 install_hd_bet() {
     # Python must be activated first(!)
@@ -119,6 +140,7 @@ install_ants() {
 
     if [ -d ants ]; then
         echo "Ants installation found. Delete ants directory and re-run script to reinstall"
+        return 0
     fi
 
     if [[ $(uname) == "Darwin" ]]; then
@@ -126,8 +148,12 @@ install_ants() {
         unzip ants.zip
         mv ants-2.5.1-arm ants
     else
-        wget https://github.com/ANTsX/ANTs/releases/download/v2.5.1/ants-2.5.1-ubuntu-22.04-X64-gcc.zip ants.zip
+
+        install_unzip
+
+        wget -O ants.zip https://github.com/ANTsX/ANTs/releases/download/v2.5.1/ants-2.5.1-ubuntu-22.04-X64-gcc.zip 
         unzip ants.zip
+        mv ants-2.5.1 ants
     fi
 
     rm ants.zip
@@ -152,7 +178,7 @@ setup_python() {
 dir_script="$(dirname "$(readlink -f "$0")")"/
 cd $dir_script
 
-install_dependencies() {
+install_mrtrix_dependencies() {
     if [[ $(uname) == "Darwin" ]]; then
         echo "macOS detected."
 
@@ -186,24 +212,77 @@ install_dependencies() {
         sudo apt-get update
         sudo apt-get install git g++ python3.10 python3.10-dev \
                                      python3-pip python3.10-venv \
-                                     zlib1g-dev libqt4-opengl-dev \
+                                     zlib1g-dev libqt5opengl5-dev \
                                      libgl1-mesa-dev libfftw3-dev \
                                      libtiff5-dev libpng-dev \
-                                     eigen
-        exit 1
+                                     libeigen3-dev
     fi
 }
 
-check_prerequisites
+install_fsl() {
 
-setup_python
+    if [ ! -z "$FSLDIR" ] || [ -d "$FSLDIR" ]; then
+        echo "Systemwide FSLDIR found. Installation skipped"
+        return 0
+    fi
 
-install_ants
+    if [ -d $(pwd)/fsl ]; then
+        echo "Local FSLDIR found. Installation skipped"
+        return 0
+    fi
 
-build_mrtrix3tissue
+    python3 ./fslinstaller.py --skip_registration --dest $(pwd)/fsl --homedir $(pwd) --no_matlab
 
-build_mrtrix3Dev
+}
 
-install_hd_bet
 
-echo "Install Complete"
+print_help() {
+    echo "Usage: $0 <directory>"
+    echo "If <directory> is provided this will be installed to that folder instead of the directory it is currently in"
+}
+
+
+install(){
+    
+    check_prerequisites
+
+    setup_python
+
+    install_fsl
+
+    install_ants
+
+    build_mrtrix3tissue
+
+    build_mrtrix3Dev
+
+    install_hd_bet
+
+    sudo apt-get install dcm2niix -y
+
+    echo "Install Complete"
+}
+
+if [ $# -eq 0 ]; then
+    install
+    exit 0
+fi
+
+if [ $# -ne 1 ]; then
+    print_help
+    exit 1
+fi
+
+# Check if the argument starts with '-'
+if [[ $1 == -* ]]; then
+    print_help
+    exit 1
+fi
+
+# Copy all files from current directory to the specified directory
+mkdir -p "$1"
+cp -r ./* "$1"
+
+# Execute install there instead
+cd "$1"
+./install.sh
