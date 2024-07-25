@@ -1,4 +1,8 @@
+original_cwd=$(pwd)
+source_dir=$(realpath $(dirname "$BASH_SOURCE[0]"))
+cd $source_dir
 source ../file-or-gz.sh
+cd $original_cwd
 
 
 function EddyCorrect {
@@ -23,8 +27,9 @@ function EddyCorrect {
     # To-do: slice to order movement
     # Requires slice timing/order which neither GE nor Philips seem to include in dicoms headers
     # --mporder=6 --slspec=my_slspec.txt --s2v_niter=5 --s2v_lambda=1 --s2v_interp=trilinear"
-    local eddyArgs=" --repol --data_is_shelled --estimate_move_by_susceptibility "
+    local noCPUS=$(nproc --all)
+    local eddyArgs=" --repol --data_is_shelled --estimate_move_by_susceptibility --nthr=$noCPUS"
 
-    dwifslpreproc $loc_in $loc_out -rpe_header -se_epi $loc_b0s -align_seepi -eddy_options "$eddyArgs" -scratch "$dir_tmp"
+    dwifslpreproc $loc_in $loc_out -rpe_header -se_epi $loc_b0s -align_seepi -eddy_options "$eddyArgs" -scratch "$dir_tmp" 
 
 }

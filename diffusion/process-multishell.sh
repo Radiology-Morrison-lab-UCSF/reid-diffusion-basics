@@ -84,5 +84,11 @@ if [ -e $loc_preprocessed ]; then
     gzip $loc_preprocessed
 fi
 
-echo "QC FA and FODs"
-mrview $loc_fa $loc_kurtosis -interpolation false -odf.load_sh $(GzFilepathIfOnlyGzFound "$loc_wm_fod")
+
+echo "-----------------------------------"
+echo "process-multishell has completed"
+echo "QC FA, kurtosis, and FODs before using results"
+echo "-----------------------------------"
+if [ "$visualCheck" = 1 ]; then
+    mrview $loc_fa $loc_kurtosis -interpolation false -odf.load_sh $(GzFilepathIfOnlyGzFound "$loc_wm_fod")
+fi

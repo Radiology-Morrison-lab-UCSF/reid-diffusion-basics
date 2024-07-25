@@ -1,15 +1,14 @@
 #!/bin/bash
 
+source install/install-fsl.sh
+source install/install-python.sh
+
 set -e
 
 
 check_prerequisites () {
-
-
-    if ! command -v python3 &> /dev/null; then
-        echo "Error: python3 is not found. Please install Python 3 then re-run this script."
-        exit 1
-    fi
+# Nothing to do at this point
+return
 }
 
 # Function to check if a command is available
@@ -127,12 +126,18 @@ install_hd_bet() {
         return 0
     fi
 
+    echo "Installing HD-BET"
+
     git clone https://github.com/MIC-DKFZ/HD-BET
 
     cd HD-BET
     python3 -m ensurepip
     python -m pip install -e .
     echo "folder_with_parameter_files = os.path.join(os.path.dirname(os.path.abspath(__file__)), \"models\")" >> HD_BET/paths.py
+
+    # Download the model ahead of time
+    wget -O HD-BET/HD_BET/0.model https://zenodo.org/record/2540695/files/0.model?download=1 
+
     cd ..
     
 }
@@ -161,21 +166,6 @@ install_ants() {
 
 }
 
-setup_python() {
-
-    # Create a Python virtual environment
-    if [ ! -d env ]; then
-        # Create a Python virtual environment
-        python3 -m venv env
-    fi
-
-
-    # Activate the virtual environment
-    chmod -R 700 ./env/bin/
-    source env/bin/activate
-
-
-}
 
 # Ensure we are in the dir of this script
 dir_script="$(dirname "$(readlink -f "$0")")"/
@@ -218,25 +208,11 @@ install_mrtrix_dependencies() {
                                      zlib1g-dev libqt5opengl5-dev \
                                      libgl1-mesa-dev libfftw3-dev \
                                      libtiff5-dev libpng-dev \
-                                     libeigen3-dev
+                                     libeigen3-dev cmake \
+                                     -y
     fi
 }
 
-install_fsl() {
-
-    if [ ! -z "$FSLDIR" ] || [ -d "$FSLDIR" ]; then
-        echo "Systemwide FSLDIR found. Installation skipped"
-        return 0
-    fi
-
-    if [ -d $(pwd)/fsl ]; then
-        echo "Local FSLDIR found. Installation skipped"
-        return 0
-    fi
-
-    python3 ./fslinstaller.py --skip_registration --dest $(pwd)/fsl --homedir $(pwd) --no_matlab
-
-}
 
 
 print_help() {
@@ -249,19 +225,19 @@ install(){
     
     check_prerequisites
 
-    setup_python
-
-    install_fsl
-
-    install_ants
-
-    build_mrtrix3tissue
+    install_python
 
     build_mrtrix3Dev
 
-    install_hd_bet
-
+    build_mrtrix3tissue
+    
     sudo apt-get install dcm2niix -y
+
+    install_hd_bet
+    
+    install_fsl
+
+    install_ants
 
     echo "Install Complete"
 }

@@ -33,6 +33,10 @@ while [[ $# -gt 0 ]]; do
         shift # past argument
         shift # past value
         ;;
+        --visual-check)
+        visualCheck=1
+        shift # past argument
+        ;;
         *)  # unknown option
         echo "Unknown option: $1"
         exit 1
@@ -47,7 +51,7 @@ if [ -z "$dir_top" ] || [ -z "$subj" ]; then
     echo "Processes single-shell HARDI data into FODs, FA, MD"
     echo "See install.sh for installation"
     echo 
-    echo "Usage: process-single-shell.sh --study-dir <study-directory> --subj <subject-id>"
+    echo "Usage: process-single-shell.sh --study-dir <study-directory> --subj <subject-id> [--visual-check]"
     echo "where <study-directory> is the absolute path to the a directory laid out like so:"
     echo "<study-directory>/dicoms/<subject-id>/diffusion_ap/*.dcm"
     echo "<study-directory>/dicoms/<subject-id>/diffusion_pa/*.dcm"
@@ -62,6 +66,9 @@ if [ -z "$dir_top" ] || [ -z "$subj" ]; then
     echo "/home/lee/my-study/diffusion/mike-jones/md.nii.gz"
     echo "/home/lee/my-study/diffusion/mike-jones/fod-wm.mif.gz"
     echo "etc"
+    echo ""
+    echo "--visual-check automatically launches mrview to visually check results when the pipeline concludes"
+
     exit 1
 fi
 
@@ -85,5 +92,10 @@ if [ -e $loc_preprocessed ]; then
     gzip $loc_preprocessed
 fi
 
-echo "QC FA and FODs"
-mrview $loc_fa -interpolation false -odf.load_sh $loc_wm_fod
+echo "-----------------------------------"
+echo "process-single-shell has completed"
+echo "QC FA and FODs before using results"
+echo "-----------------------------------"
+if [ "$visualCheck" = 1 ]; then
+    mrview $loc_fa -interpolation false -odf.load_sh $loc_wm_fod
+fi
