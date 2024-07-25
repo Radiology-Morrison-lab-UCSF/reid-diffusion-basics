@@ -137,6 +137,10 @@ install_hd_bet() {
 
     # Download the model ahead of time
     wget -O HD-BET/HD_BET/0.model https://zenodo.org/record/2540695/files/0.model?download=1 
+    wget -O HD-BET/HD_BET/1.model https://zenodo.org/record/2540695/files/1.model?download=1 
+    wget -O HD-BET/HD_BET/2.model https://zenodo.org/record/2540695/files/2.model?download=1 
+    wget -O HD-BET/HD_BET/3.model https://zenodo.org/record/2540695/files/3.model?download=1 
+    wget -O HD-BET/HD_BET/4.model https://zenodo.org/record/2540695/files/4.model?download=1 
 
     cd ..
     
