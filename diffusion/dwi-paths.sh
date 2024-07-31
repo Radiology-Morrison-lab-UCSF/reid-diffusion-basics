@@ -7,10 +7,12 @@ SetDWIPaths(){
     dir_dicoms_top=$dir_top"dicoms/"$subj"/"
     dir_dicoms_ap=$dir_dicoms_top"diffusion_ap/"
     dir_dicoms_pa=$dir_dicoms_top"diffusion_pa/"
+    dir_dicoms_online_distortion_corrected=$dir_dicoms_top"diffusion_distortion_corrected/"
     dir_diffusion=$dir_top"diffusion/"$subj"/"
 
     loc_dwi_raw=$dir_diffusion"raw.mif"
     loc_denoised=$dir_diffusion"denoised.mif"
+    loc_denoise_with_any_corrected_b0=$dir_diffusion"denoised-plus-corrected-b0s.mif"
     loc_eddyCorrected=$dir_diffusion"eddy-corrected.mif"
     loc_preprocessed=$dir_diffusion"preprocessed.mif"
     loc_wm_fod=$dir_diffusion"fod-wm.mif.gz"

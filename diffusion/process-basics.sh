@@ -34,6 +34,8 @@ PreprocessBasicDWI(){
 
         DenoiseAndGibbs $loc_dwi_raw $loc_denoised
 
+        InsertUndistortedB0IfExists $loc_denoised $dir_dicoms_online_distortion_corrected $loc_denoise_with_any_corrected_b0
+
         EddyCorrect $loc_denoised $loc_eddyCorrected
 
         SkullStripDWI $loc_eddyCorrected $loc_dwimask
@@ -43,5 +45,5 @@ PreprocessBasicDWI(){
     fi
 
     # Save some disk space
-    rm -f $loc_dwi_raw $loc_denoised $loc_eddyCorrected
+    rm -f $loc_dwi_raw $loc_denoised $loc_eddyCorrected $loc_denoise_with_any_corrected_b0
 }

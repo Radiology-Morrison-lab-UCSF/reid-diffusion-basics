@@ -68,6 +68,8 @@ if [ -z "$dir_top" ] || [ -z "$subj" ]; then
     echo "etc"
     echo ""
     echo "--visual-check automatically launches mrview to visually check results when the pipeline concludes"
+    echo 
+    echo "If the script encounters <study-directory>/dicoms/<subject-id>/diffusion_distortion_corrected/*.dcm it will use b0s from here to tell eddy what an undistorted image should look like"
 
     exit 1
 fi

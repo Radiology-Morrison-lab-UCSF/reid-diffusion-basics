@@ -44,10 +44,10 @@ cd $source_dir
 
 # Check if required arguments are provided
 if [ -z "$dir_top" ] || [ -z "$subj" ]; then
-    echo "Processes single-shell HARDI data into FODs, FA, MD"
+    echo "Processes multi-shell HARDI data into FODs, FA, MD"
     echo "See install.sh for installation"
     echo 
-    echo "Usage: process-single-shell.sh --study-dir <study-directory> --subj <subject-id>"
+    echo "Usage: process-multi-shell.sh --study-dir <study-directory> --subj <subject-id>"
     echo "where <study-directory> is the absolute path to the a directory laid out like so:"
     echo "<study-directory>/dicoms/<subject-id>/diffusion_ap/*.dcm"
     echo "<study-directory>/dicoms/<subject-id>/diffusion_pa/*.dcm"
@@ -56,12 +56,14 @@ if [ -z "$dir_top" ] || [ -z "$subj" ]; then
     echo "For example for data:"
     echo "/home/lee/my-study/dicoms/mike-jones/diffusion_ap/*.dcm"
     echo "/home/lee/my-study/dicoms/mike-jones/diffusion_pa/*.dcm"
-    echo "process-single-shell.sh --study-dir /home/lee/my-study/ --subj mike-jones"
+    echo "process-multi-shell.sh --study-dir /home/lee/my-study/ --subj mike-jones"
     echo "would produce"
     echo "/home/lee/my-study/diffusion/mike-jones/fa.nii.gz"
     echo "/home/lee/my-study/diffusion/mike-jones/md.nii.gz"
     echo "/home/lee/my-study/diffusion/mike-jones/fod-wm.mif.gz"
     echo "etc"
+    echo "If the script encounters <study-directory>/dicoms/<subject-id>/diffusion_distortion_corrected/*.dcm it will use b0s from here to tell eddy what an undistorted image should look like"
+
     exit 1
 fi
 

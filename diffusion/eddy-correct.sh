@@ -4,6 +4,24 @@ cd $source_dir
 source ../file-or-gz.sh
 cd $original_cwd
 
+function InsertUndistortedB0IfExists {
+    # Inserts any undistorted b0s in the mix for subsequent use of eddy
+    loc_dwi=$(GzFilepathIfOnlyGzFound "$1")
+    dir_undistortedDicoms=$(GzFilepathIfOnlyGzFound "$2")
+    loc_out="$3"
+
+    if [ ! -f "$dir_undistortedDicoms" ]; then
+        echo  No undistorted B0s found. Eddy will run normally.
+    fi
+
+    echo "Found an undistorted B0. Adding into the image sequence to guide eddy."
+
+    # We state the image was acquired with effectively infinite bandwidth
+    mrconvert.exe "$dir_undistortedDicoms" - | \
+	    dwiextract.exe - -bzero - | \
+	    mrconvert -clear-property PixelBandwidth -set-property TotalReadoutTime 0 -set-property PhaseEncodingDirection j | \
+	    mrcat -force "$loc_dwi" - "$loc_denoise_with_any_corrected_b0"
+}
 
 function EddyCorrect {
     loc_in=$(GzFilepathIfOnlyGzFound "$1")
