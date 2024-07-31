@@ -136,11 +136,12 @@ install_hd_bet() {
     echo "folder_with_parameter_files = os.path.join(os.path.dirname(os.path.abspath(__file__)), \"models\")" >> HD_BET/paths.py
 
     # Download the model ahead of time
-    wget -O HD-BET/HD_BET/0.model https://zenodo.org/record/2540695/files/0.model?download=1 
-    wget -O HD-BET/HD_BET/1.model https://zenodo.org/record/2540695/files/1.model?download=1 
-    wget -O HD-BET/HD_BET/2.model https://zenodo.org/record/2540695/files/2.model?download=1 
-    wget -O HD-BET/HD_BET/3.model https://zenodo.org/record/2540695/files/3.model?download=1 
-    wget -O HD-BET/HD_BET/4.model https://zenodo.org/record/2540695/files/4.model?download=1 
+    mkdir models
+    wget -O models/0.model https://zenodo.org/record/2540695/files/0.model?download=1 
+    wget -O models/1.model https://zenodo.org/record/2540695/files/1.model?download=1 
+    wget -O models/2.model https://zenodo.org/record/2540695/files/2.model?download=1 
+    wget -O models/3.model https://zenodo.org/record/2540695/files/3.model?download=1 
+    wget -O models/4.model https://zenodo.org/record/2540695/files/4.model?download=1 
 
     cd ..
     
@@ -231,17 +232,17 @@ install(){
 
     install_python
 
+    install_hd_bet
+
+    install_ants
+
     build_mrtrix3Dev
 
     build_mrtrix3tissue
     
     sudo apt-get install dcm2niix -y
-
-    install_hd_bet
     
     install_fsl
-
-    install_ants
 
     echo "Install Complete"
 }
