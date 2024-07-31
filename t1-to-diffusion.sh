@@ -66,33 +66,36 @@ SetDWIPaths $dir_top $subj
 if [ ! $(file_or_gz_exists $loc_t1_to_dwi $loc_t1_dwi_space) ]; then
     cd $dir_processed_structurals
 
-    loc_moving=$(GzFilepathIfOnlyGzFound "$loc_t1_n4")
-    loc_moving_mask=$(GzFilepathIfOnlyGzFound "$loc_t1_brainmask")
-    loc_fixed=$(GzFilepathIfOnlyGzFound "$loc_fa")
 
-    loc_fixed_mask=$(mktemp)
-    mv $loc_fixed_mask $loc_fixed_mask.nii
-    loc_fixed_mask=$loc_fixed_mask.nii
-    trap "rm $loc_fixed_mask" EXIT
-    mrconvert --force $(GzFilepathIfOnlyGzFound "$loc_dwimask") $loc_fixed_mask
+    loc_fixed=$(GzFilepathIfOnlyGzFound "$loc_t1_n4")
+    loc_fixed_mask=$(GzFilepathIfOnlyGzFound "$loc_t1_brainmask")
+
+    loc_moving=$(GzFilepathIfOnlyGzFound "$loc_fa")
+    loc_moving_mask=$(mktemp)
+    mv $loc_moving_mask $loc_moving_mask.nii
+    loc_moving_mask=$loc_moving_mask.nii
+    trap "rm $loc_moving_mask" EXIT
+    mrconvert --force $(GzFilepathIfOnlyGzFound "$loc_dwimask") $loc_moving_mask
 
     antsRegistration \
         -d 3 \
-        -o [t1-to-diffusion,t1-in-diffusion-space.nii.gz,] \
+        -o [diffusion-to-t1,fa-in-t1-space.nii.gz,] \
         --interpolation Linear \
         --winsorize-image-intensities [0.005,0.995] \
         --use-histogram-matching 1 \
         --masks [$loc_fixed_mask,$loc_moving_mask] \
         --initial-moving-transform [$loc_fixed,$loc_moving,1] \
-        --metric MI[$loc_fixed,$loc_moving,1,64,Regular,0.5] \
+        --metric MI[$loc_fixed,$loc_moving,1,128,Regular,1] \
         --transform Rigid[0.1] \
-        --convergence 1000x500x200x100 \
-        --smoothing-sigmas 8x4x2x1vox \
-        --shrink-factors 8x4x2x1 \
+        --convergence 1000x500x500x200x100 \
+        --smoothing-sigmas 3x2x1x1x0vox \
+        --shrink-factors 8x4x4x2x1 \
         --float \
         --random-seed 123456 \
         --verbose
     
-    mv t1-to-diffusion0GenericAffine.mat $loc_t1_to_dwi
+    mv diffusion-to-t10GenericAffine.mat $loc_t1_to_dwi
+
+
 fi
     
