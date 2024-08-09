@@ -6,6 +6,7 @@ source_dir=$(dirname "$0")
 cd $source_dir
 source ../path-functions.sh
 source ../file-or-gz.sh
+source ../exe-paths.sh
 source convert-raw.sh
 source denoise-gibbs.sh
 source eddy-correct.sh

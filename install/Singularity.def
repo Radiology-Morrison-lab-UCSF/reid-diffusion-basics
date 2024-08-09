@@ -1,0 +1,47 @@
+Bootstrap: docker
+From: ubuntu:22.04
+Stage: spython-base
+
+%setup
+
+%files
+../ /usr/bin/reid-diffusion-basics/
+
+%labels
+maintainer="Lee Reid <lee.reid1@uqconnect.edu.au>"
+
+%post -c /bin/bash
+
+set -e
+
+cd /usr/bin/reid-diffusion-basics/
+
+apt-get update && apt-get install -y wget unzip git
+
+# Replace sudo with a function that just runs the provided arguments normally
+sudo() {
+    # Check if there are any arguments
+    if [ "$#" -eq 0 ]; then
+    echo "No command provided."
+    exit 1
+    fi
+
+    # Run the command with the provided arguments
+    "$@"
+}
+
+# We run the FSL install ourselves as the normal way to do it fails in docker images for ubuntu 22.04 without the miniconda flag
+source ./install/install-python.sh && \
+install_python && \
+source ./install/install-fsl.sh && \
+install_fsl --miniconda https://github.com/conda-forge/miniforge/releases/download/22.11.1-4/Mambaforge-22.11.1-4-Linux-x86_64.sh
+
+source ./.bash_profile
+# source is important here because it passes on the sudo alias into these scripts
+source ./install.sh
+%runscript
+cd /usr/bin/reid-diffusion-basics/
+exec /bin/bash /usr/bin/reid-diffusion-basics/main.sh "$@"
+%startscript
+cd /usr/bin/reid-diffusion-basics/
+exec /bin/bash /usr/bin/reid-diffusion-basics/main.sh "$@"

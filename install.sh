@@ -47,6 +47,7 @@ install_homebrew() {
 
 build_mrtrix3tissue() {
 
+    cd $install_dir
     local directory="MRtrix3Tissue"
 
     if [ -f $directory/bin/ss3t_csd_beta1 ]; then
@@ -64,7 +65,6 @@ build_mrtrix3tissue() {
         echo "Git clone skipped: Directory $directory already exists and is not empty."
     fi
 
-    local start=$(pwd)
     cd $directory
 
 
@@ -81,15 +81,14 @@ build_mrtrix3tissue() {
     export ARCH=native
     EIGEN_CFLAGS="-isystem $(pwd)/eigen" ./configure -nogui
     ./build
-
-    cd $start
 }
 
 build_mrtrix3Dev() {
 
+    cd $install_dir
     local directory="MRtrix3Src"
-    local installTo="$(pwd)/mrtrix3-dev"
-    local start=$(pwd)
+    local installTo="$(install_dir)/mrtrix3-dev"
+    local start=$(install_dir)
 
     if [ -d $installTo ]; then
         echo "MRtrix3 Dev installation found. Delete $installTo and re-run script to reinstall"
@@ -115,7 +114,10 @@ build_mrtrix3Dev() {
     cmake --build build
     cmake --install build
 
-    cd $start
+    echo "Installed mrtrix dev to $installTo:"
+    ls $installTo
+
+    echo "Removing $directory"
     rm -rf $directory
 }
 install_hd_bet() {
@@ -148,6 +150,8 @@ install_hd_bet() {
 }
 
 install_ants() {
+
+    cd $install_dir
 
     if [ -d ants ]; then
         echo "Ants installation found. Delete ants directory and re-run script to reinstall"
@@ -227,6 +231,9 @@ print_help() {
 
 
 install(){
+
+    install_dir=$(pwd)
+    echo Installing to $(install_dir)
     
     check_prerequisites
 
@@ -240,10 +247,10 @@ install(){
 
     build_mrtrix3tissue
     
+    install_fsl
+    
     sudo apt-get install dcm2niix -y
     
-    install_fsl
-
     echo "Install Complete"
 }
 

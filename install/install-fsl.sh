@@ -1,12 +1,9 @@
 install_fsl() {
 
+    set -ex
+
     local install_source_dir=$(realpath $(dirname "$BASH_SOURCE[0]"))
     local source_dir=$(realpath "$install_source_dir/../")
-
-    if [ ! -z "$FSLDIR" ] || [ -d "$FSLDIR" ]; then
-        echo "Systemwide FSLDIR found. Installation skipped"
-        return 0
-    fi
 
     local fsldir="$source_dir"/fsl
 
@@ -15,6 +12,13 @@ install_fsl() {
         return 0
     fi
 
-    python3 "$install_source_dir"/fslinstaller.py --skip_registration --dest "$fsldir" --homedir "$source_dir" --no_matlab "$@"
+    if [ ! -z "$FSLDIR" ] || [ -d "$FSLDIR" ]; then
+        echo "Systemwide FSLDIR found. Installation skipped"
+        return 0
+    fi
+
+    echo Installing FSL as "$fsldir" was not found and FSLDIR is unset
+
+    python3 "$install_source_dir/fslinstaller.py" --skip_registration --dest "$fsldir" --homedir "$source_dir" --no_matlab "$@"
 
 }
