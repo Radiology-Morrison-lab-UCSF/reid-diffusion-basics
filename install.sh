@@ -1,14 +1,15 @@
 #!/bin/bash
 
-source install/install-fsl.sh
-source install/install-python.sh
+dir_script="$(dirname "$(readlink -f "$0")")"/
+source "${dir_script}/install/install-fsl.sh"
+source "${dir_script}/install/install-python.sh"
 
 set -e
 
 
 check_prerequisites () {
-# Nothing to do at this point
-return
+    # Nothing to do at this point
+    return
 }
 
 # Function to check if a command is available
@@ -47,8 +48,8 @@ install_homebrew() {
 
 build_mrtrix3tissue() {
 
-    cd $install_dir
-    local directory="MRtrix3Tissue"
+    local install_dir="$1"
+    local directory="${install_dir}/MRtrix3Tissue"
 
     if [ -f $directory/bin/ss3t_csd_beta1 ]; then
         echo "MRtrix3Tissue installation found. Delete $directory and re-run script to reinstall"
@@ -85,10 +86,9 @@ build_mrtrix3tissue() {
 
 build_mrtrix3Dev() {
 
-    cd $install_dir
-    local directory="MRtrix3Src"
-    local installTo="$(install_dir)/mrtrix3-dev"
-    local start=$(install_dir)
+    local install_dir="$1"
+    local directory="${install_dir}/MRtrix3Src"
+    local installTo="${install_dir}/mrtrix3-dev"
 
     if [ -d $installTo ]; then
         echo "MRtrix3 Dev installation found. Delete $installTo and re-run script to reinstall"
@@ -109,7 +109,7 @@ build_mrtrix3Dev() {
 
     # create the make files. Note that we set the git path to nothing so that it does not try
     # to compare the mrtrix base version to the current tag, as in the dev arm it refuses to build this was
-    cmake -B build -D CMAKE_INSTALL_PREFIX="$installTo" -D MRTRIX_BUILD_GUI=OFF -D GIT_EXECUTABLE=
+    cmake  -B build -G Ninja -D CMAKE_INSTALL_PREFIX="$installTo" -D MRTRIX_BUILD_GUI=OFF -D GIT_EXECUTABLE=
     # build
     cmake --build build
     cmake --install build
@@ -117,6 +117,7 @@ build_mrtrix3Dev() {
     echo "Installed mrtrix dev to $installTo:"
     ls $installTo
 
+    cd "$install_dir"
     echo "Removing $directory"
     rm -rf $directory
 }
@@ -151,7 +152,7 @@ install_hd_bet() {
 
 install_ants() {
 
-    cd $install_dir
+    local install_dir="$1"
 
     if [ -d ants ]; then
         echo "Ants installation found. Delete ants directory and re-run script to reinstall"
@@ -175,10 +176,6 @@ install_ants() {
 
 }
 
-
-# Ensure we are in the dir of this script
-dir_script="$(dirname "$(readlink -f "$0")")"/
-cd $dir_script
 
 install_mrtrix_dependencies() {
     if [[ $(uname) == "Darwin" ]]; then
@@ -205,7 +202,7 @@ install_mrtrix_dependencies() {
 
         install_homebrew
 
-        brew install qt5 pkg-config libtiff fftw libpng
+        brew install qt5 pkg-config libtiff fftw libpng ninja-build
 
         # Add Qt’s binaries to your path
         export PATH='brew --prefix'/opt/qt5/bin:$PATH
@@ -218,6 +215,7 @@ install_mrtrix_dependencies() {
                                      libgl1-mesa-dev libfftw3-dev \
                                      libtiff5-dev libpng-dev \
                                      libeigen3-dev cmake \
+                                     ninja-build \
                                      -y
     fi
 }
@@ -225,15 +223,42 @@ install_mrtrix_dependencies() {
 
 
 print_help() {
-    echo "Usage: $0 <directory>"
+    echo "Usage: $0 <directory> [--no-sudo]"
     echo "If <directory> is provided this will be installed to that folder instead of the directory it is currently in"
+    echo "  --no-sudo  If specified, the script will not use sudo."
 }
 
+parse_args() {
+    # Initialize variables
+    install_to=""
 
-install(){
+    # Parse arguments
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --no-sudo)
+            no_sudo="$1"
+            shift
+            ;;
+            *)
+            if [ -z "$file_path" ]; then
+                install_to="$1"
+                shift
+            else
+                # If there are more than one positional arguments
+                echo "Error: Unexpected argument '$1'."
+                display_help
+                exit 1
+            fi
+            ;;
+        esac
+    done
+
+}
+
+install() {
 
     install_dir=$(pwd)
-    echo Installing to $(install_dir)
+    echo "Installing to $install_dir"
     
     check_prerequisites
 
@@ -241,11 +266,11 @@ install(){
 
     install_hd_bet
 
-    install_ants
+    install_ants "$install_dir"
 
-    build_mrtrix3Dev
+    build_mrtrix3Dev "$install_dir"
 
-    build_mrtrix3tissue
+    build_mrtrix3tissue "$install_dir"
     
     install_fsl
     
@@ -254,26 +279,29 @@ install(){
     echo "Install Complete"
 }
 
-if [ $# -eq 0 ]; then
-    install
+
+parse_args "$@"
+
+# Ensure we are in the dir of this script
+cd $dir_script
+
+
+if [ ! -z "$install_to" ]; then
+    # Copy all files from current directory to the specified directory
+    mkdir -p "$install_to"
+    cp -r ./* "$install_to"
+
+    # Execute install there instead
+    cd "$install_to"
+    ./install.sh "$no_sudo"
     exit 0
 fi
 
-if [ $# -ne 1 ]; then
-    print_help
-    exit 1
+echo "----"
+echo $no_sudo
+
+if [ ! -z "$no_sudo" ]; then
+    source ./install/no-sudo.sh
 fi
 
-# Check if the argument starts with '-'
-if [[ $1 == -* ]]; then
-    print_help
-    exit 1
-fi
-
-# Copy all files from current directory to the specified directory
-mkdir -p "$1"
-cp -r ./* "$1"
-
-# Execute install there instead
-cd "$1"
-./install.sh
+install
