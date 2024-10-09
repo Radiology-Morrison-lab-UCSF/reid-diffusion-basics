@@ -11,14 +11,15 @@ function InsertUndistortedB0IfExists {
     loc_out="$3"
 
     if [ ! -f "$dir_undistortedDicoms" ]; then
-        echo  No undistorted B0s found. Eddy will run normally.
+        echo  No undistorted B0s found in $dir_undistortedDicoms. Eddy will run normally.
+        return
     fi
 
-    echo "Found an undistorted B0. Adding into the image sequence to guide eddy."
+    echo "Found an undistorted B0 in $dir_undistortedDicoms. Adding into the image sequence to guide eddy."
 
     # We state the image was acquired with effectively infinite bandwidth
-    mrconvert.exe "$dir_undistortedDicoms" - | \
-	    dwiextract.exe - -bzero - | \
+    mrconvert "$dir_undistortedDicoms" - | \
+	    dwiextract - -bzero - | \
 	    mrconvert -clear-property PixelBandwidth -set-property TotalReadoutTime 0 -set-property PhaseEncodingDirection j | \
 	    mrcat -force "$loc_dwi" - "$loc_denoise_with_any_corrected_b0"
 }
