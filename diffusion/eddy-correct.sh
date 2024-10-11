@@ -49,6 +49,8 @@ function EddyCorrect {
     local noCPUS=$(nproc --all)
     local eddyArgs=" --repol --data_is_shelled --estimate_move_by_susceptibility --nthr=$noCPUS"
 
+    origDir=$(pwd)
+    cd "$dir_tmp" # switch as this script forcefully tries to write to the cwd
     dwifslpreproc $loc_in $loc_out -rpe_header -se_epi $loc_b0s -align_seepi -eddy_options "$eddyArgs" -scratch "$dir_tmp" 
-
+    cd "$origDir"
 }
