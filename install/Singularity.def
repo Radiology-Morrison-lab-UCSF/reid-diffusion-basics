@@ -29,6 +29,8 @@ install_fsl --miniconda https://github.com/conda-forge/miniforge/releases/downlo
 
 source ./.bash_profile
 ./install.sh --no-sudo
+chmod -R 555 usr/bin/reid-diffusion-basics/
+
 %runscript
 cd /usr/bin/reid-diffusion-basics/
 exec /bin/bash /usr/bin/reid-diffusion-basics/main.sh "$@"
