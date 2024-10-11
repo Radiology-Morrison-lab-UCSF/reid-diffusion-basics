@@ -30,8 +30,9 @@ set -x
 
 sbatch  --nodes=1 \
         --mem=64GB \
-        --cpus-per-task=8 \
+        --cpus-per-task=10 \
         --chdir="$workingDir" \
         --time="2:00:00" \
         --job-name="build-reid-diffusion-basics" \
-        "$pathToScripts"
+        --partition=long \
+	"$pathToScripts"
