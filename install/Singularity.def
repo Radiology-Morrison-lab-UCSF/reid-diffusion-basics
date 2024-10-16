@@ -16,6 +16,8 @@ set -e
 
 cd /usr/bin/reid-diffusion-basics/
 
+rm -rf ./.git
+
 apt-get update && apt-get install -y wget unzip git
 
 # Replace sudo with a function that just runs the provided arguments normally
