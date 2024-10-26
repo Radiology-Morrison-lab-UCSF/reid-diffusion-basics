@@ -25,7 +25,7 @@ case $key in
     diffusion-single-shell)
     "$dir_sourceTop"/diffusion/process-single-shell.sh "$@"
     ;;
-    diffusion-multi-shell)
+    diffusion-multishell)
     "$dir_sourceTop"/diffusion/process-multishell.sh "$@"
     ;;
     prepare-t1)
