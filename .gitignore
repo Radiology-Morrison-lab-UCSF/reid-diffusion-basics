@@ -2,6 +2,7 @@ env/
 HD-BET/
 ants/
 MRtrix3Tissue/
+mrtrix3-dev/
 **/.DS_Store
 fsl/
 ants-2.5.1/

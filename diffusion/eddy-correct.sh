@@ -51,6 +51,8 @@ function EddyCorrect {
 
     origDir=$(pwd)
     cd "$dir_tmp" # switch as this script forcefully tries to write to the cwd
-    $loc_python dwifslpreproc $loc_in $loc_out -rpe_header -se_epi $loc_b0s -align_seepi -eddy_options "$eddyArgs" -scratch "$dir_tmp" 
+
+    export PATH="$PATH":"$FSLDIR/bin" # for whatever reason the fsl activate doesn't work
+    $loc_python $dir_mrtrix_3tissue/dwifslpreproc $loc_in $loc_out -rpe_header -se_epi $loc_b0s -align_seepi -eddy_options "$eddyArgs" -scratch "$dir_tmp" 
     cd "$origDir"
 }

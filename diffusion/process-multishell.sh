@@ -75,7 +75,7 @@ PreprocessBasicDWI "$dir_top" $subj
 
 CalcTensors $loc_preprocessed $loc_dwimask $loc_fa $loc_md
 
-CalcKurtosis $loc_preprocessed $loc_dwimask $loc_kurtosis
+CalcKurtosis $loc_preprocessed $loc_dwimask $loc_kurtosis $loc_kurtosis_mean $loc_kurtosis_axial $loc_kurtosis_radial
 
 
 MSMTFOD $loc_preprocessed $loc_dwimask $dir_diffusion

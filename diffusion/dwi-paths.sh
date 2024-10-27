@@ -19,5 +19,8 @@ SetDWIPaths(){
     loc_fa=$dir_diffusion"fa.nii.gz"
     loc_md=$dir_diffusion"md.nii.gz"
     loc_kurtosis=$dir_diffusion"kurtosis.mif.gz"
+    loc_kurtosis_mean=$dir_diffusion"kurtosis-mean.nii.gz"
+    loc_kurtosis_axial=$dir_diffusion"kurtosis-axial.nii.gz"
+    loc_kurtosis_radial=$dir_diffusion"kurtosis-radial.nii.gz"
     loc_dwimask=$dir_diffusion"mask.mif"
 }

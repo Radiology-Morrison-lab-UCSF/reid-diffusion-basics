@@ -11,6 +11,7 @@ current_script="$(realpath "${BASH_SOURCE[0]}")"
 dir_sourceTop=$(dirname "$current_script")/
 dir_hdbet=$dir_sourceTop"HD-BET/HD_BET/"
 dir_mrtrix_3tissue=$dir_sourceTop"MRtrix3Tissue/bin/"
+dir_mrtrix_dev=$dir_sourceTop"mrtrix3-dev/bin/"
 dir_ants=$dir_sourceTop"ants/bin/"
 dir_python_env=$dir_sourceTop"/env/bin"
 loc_activate_python=$dir_python_env/activate
