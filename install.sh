@@ -79,7 +79,11 @@ build_mrtrix3tissue() {
         cd ..
     fi
 
-    export ARCH=native
+    # For maximal performance, swap x86-64-v3 for native but this will limit 
+    # this running properly on many machines on the UCSF cluster because they
+    # are highly heterogeneous, including within the same partition
+    #export ARCH=native
+    export ARCH=x86-64-v3
     EIGEN_CFLAGS="-isystem $(pwd)/eigen" ./configure -nogui
     ./build
 }
@@ -268,9 +272,9 @@ install() {
 
     install_ants "$install_dir"
 
-    build_mrtrix3Dev "$install_dir"
-
     build_mrtrix3tissue "$install_dir"
+
+    build_mrtrix3Dev "$install_dir"
     
     install_fsl
     
