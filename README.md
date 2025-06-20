@@ -35,6 +35,8 @@ Once the sif file has been built, the rest of this repository can be delete.
 apptainer run --cleanenv --no-home --nv --bind /data/ /path/to/reid-diffusion-basics.sif <arguments>
 ```
 
+See "The Pipelines" below to see what you need to enter in place of `<arguments>`
+
 ## Docker Installation
 
 ### Build
@@ -49,9 +51,11 @@ This can take 2 hours to run, depending on your system.
 
 ### Run
 
-Run will depend on how you would like to bind to directories on your computer.
+Run will depend on how you would like to bind to directories on your computer. See "The Pipelines" below to see which non-docker arguments you will need.
 
-## The pipelines
+## The Pipelines
+
+The container contains several pipelines. Please choose the appropriate one based on your data and use case.
 
 ### Process Single Shell
 
@@ -59,11 +63,13 @@ The script `process-single-shell` will process single-shell reverse phased DWI.
 
 #### Required Inputs
 
-This requires dicoms for reverse-phase encoded diffusion data. There should be one AP acquisition and one separate PA acquisition. These images must match in all regards, except the number of b0s, the number of directions acquired, and which directions were acquired. 
+This requires dicoms for reverse-phase encoded diffusion data. There should be one AP acquisition and one separate PA acquisition. These images must match in all regards, except the number of b0s, the number of directions acquired, and which directions were acquired. In principle, the pipeline has a means of processing non-reverse phase encoded data if you have a distortion-free (i.e. scanner-corrected) b0 image but this is not "officially supported" - it is up to you to hunt through the code to get this to work.
 
 Suboptimal results or a pipeline error may occur if either acquisition has fewer than 20 directions, or poorly distributed directions. There is no known workaround with these scripts in such a scenario.
 
 Images should have a b value between 2000 and 3000.
+
+The pipeline assumes that partial fourier has not been employed (i.e. it conducts gibbs-artefact removal without checking for appropriateness).
 
 Data should be structured as follows:
 
@@ -107,6 +113,22 @@ Would produce:
 etc
 ```
 
+#### Processing Stages
+
+Check the scripts for up to date details on processing. At the time of writing this readme the basic steps were:
+
+1. Preprocessing
+    1. Dicom to Nifti conversion, and concatenation of sequences
+    1. Denoising (MRtrix)
+    1. Gibbs artefact removal (MRtrix)
+    1. Concatenation with undistored B0s (only if supplied for distortion correction in absence of reverse-phase encoding)
+    1. Eddy Correction (FSL). This includes head motion, susceptibility correction, and eddy current correction. Note that Eddy currents are not present in several dual-spin-echo UCSF sequences.
+    1. Skull stripping (HD-BET)
+    1. Bias Field Correction (MRtrix/ANTs)
+1. Single-shell Multiple Tissue FOD calculation (see Dhollander et al)
+1. Tensor Metric Calculation (MRtrix)
+
+
 ### Process Multishell
 
 The script `process-multishell` will process multi-shell reverse phased DWI. 
@@ -118,6 +140,9 @@ This requires dicoms for reverse-phase encoded diffusion data. There should be o
 Suboptimal results or a pipeline error may occur if the highest shell has fewer than 20 directions per acquisition, or the highest shell has poorly distributed directions. There is no known workaround with these scripts in such a scenario.
 
 The highest shell should be b=2000 or higher if tractography is the goal. Ideally, include a shell around b=1000 for FA measurements. For Kurtosis, use a sequence designed by Lee Reid.
+
+The pipeline assumes that partial fourier has not been employed (i.e. it conducts gibbs-artefact removal without checking for appropriateness).
+
 
 Data should be structured as follows:
 
@@ -140,6 +165,23 @@ e.g.
 #### Outputs
 
 Outputs are similar to the single-shelled output, but also include kurtosis measurements where possible.
+
+#### Processing Stages
+
+Check the scripts for up to date details on processing. At the time of writing this readme the basic steps were:
+
+1. Preprocessing
+    1. Dicom to Nifti conversion, and concatenation of sequences
+    1. Denoising (MRtrix)
+    1. Gibbs artefact removal (MRtrix)
+    1. Concatenation with undistored B0s (only if supplied for distortion correction in absence of reverse-phase encoding)
+    1. Eddy Correction (FSL). This includes head motion, susceptibility correction, and eddy current correction. Note that Eddy currents are not present in several dual-spin-echo UCSF sequences.
+    1. Skull stripping (HD-BET)
+    1. Bias Field Correction (MRtrix/ANTs)
+1. Tensor Metric Calculation (MRtrix)
+1. Kurtosis Metric Calculation (MRtrix - experimental).
+1. Multi-shell Multiple Tissue FOD calculation (MRtrix)
+
 
 ### T1 To Diffusion
 
